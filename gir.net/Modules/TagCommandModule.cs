@@ -8,29 +8,34 @@ namespace gir.net.Modules;
 public class TagCommandModule(ITagService tagService) : ApplicationCommandModule<ApplicationCommandContext>
 {
     [SlashCommand("tag", "Gets a tag by name", Contexts = [InteractionContextType.Guild])]
-    public async Task GetTag(string name)
+    public async Task<InteractionMessageProperties> GetTag(string name)
     {
         var tag = await tagService.GetTagAsync(name);
 
         if (tag == null)
         {
-            await RespondError($"No tag found with the name '{name}'");
-            return;
+            return RespondError($"No tag found with the name '{name}'");
         }
-        
-        var embed = new EmbedProperties()
-            .WithTitle(tag.Name)
-            .WithDescription(tag.Content)
-            .WithTimestamp(tag.AddedDate)
-            .WithFooter(new EmbedFooterProperties().WithText($"Added by {tag.AddedByTag} | Used {tag.UseCount} times"));
+
+
+        var container = new ComponentContainerProperties()
+            .WithComponents([
+                new TextDisplayProperties($"# {tag.Name}"),
+                new TextDisplayProperties($"{tag.Content}"),
+                new TextDisplayProperties($"-# Created by {tag.AddedByTag} | Used {tag.UseCount} times")
+            ])
+            .WithAccentColor(new(System.Drawing.Color.Salmon.ToArgb()));
 
         var message = new InteractionMessageProperties()
-            .WithEmbeds([embed]);
-        
-        await RespondAsync(InteractionCallback.Message(message));
-    }
+            .AddComponents(container)
+            .WithFlags(MessageFlags.IsComponentsV2);
 
-    public async Task RespondError(string error)
+        return message;
+    }
+    
+    // public async Task AddTag(string name)
+
+    public InteractionMessageProperties RespondError(string error)
     {
         var embed = new  EmbedProperties()
             .WithTitle(":(\nAn error occured")
@@ -39,7 +44,7 @@ public class TagCommandModule(ITagService tagService) : ApplicationCommandModule
         
         var message = new InteractionMessageProperties()
             .WithEmbeds([embed]);
-        
-        await RespondAsync(InteractionCallback.Message(message));
+
+        return message;
     }
 }
