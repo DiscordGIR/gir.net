@@ -9,6 +9,7 @@ using NetCord.Hosting.Services;
 using NetCord.Hosting.Services.ApplicationCommands;
 using NetCord.Hosting.Services.Commands;
 using Microsoft.Extensions.Logging;
+using NetCord;
 using NetCord.Gateway;
 
 namespace gir.net;
@@ -47,10 +48,13 @@ class Program
             .AddDiscordGateway(options =>
             {
                 options.Token = discordToken;
-                options.Intents = GatewayIntents.GuildMessages | GatewayIntents.DirectMessages | GatewayIntents.MessageContent;
+                options.Intents = GatewayIntents.GuildMessages | GatewayIntents.DirectMessages |
+                                  GatewayIntents.MessageContent;
             })
-            .AddApplicationCommands()
-            .AddCommands();
+            .AddApplicationCommands(options =>
+            {
+                options.DefaultContexts = [InteractionContextType.Guild];
+            });
         
         var host = builder.Build();
         
