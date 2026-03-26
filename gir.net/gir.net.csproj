@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
-    <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -19,7 +18,17 @@
     <PackageReference Include="NetCord.Hosting.AspNetCore" Version="1.0.0-alpha.460" />
     <PackageReference Include="NetCord.Hosting.Services" Version="1.0.0-alpha.460" />
     <PackageReference Include="NetCord.Services" Version="1.0.0-alpha.460" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\gir.net.Application\gir.net.Application.csproj" />
+    <ProjectReference Include="..\gir.net.Infrastructure\gir.net.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
