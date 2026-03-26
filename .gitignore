@@ -133,3 +133,12 @@ $RECYCLE.BIN/
 _NCrunch*
 
 .env
+
+# JetBrains/IDE metadata
+.idea/
+
+# Handle accidental Windows-style output paths on Unix (e.g. "bin\Debug")
+**/bin\\Debug/
+**/bin\\Release/
+**/obj\\Debug/
+**/obj\\Release/
