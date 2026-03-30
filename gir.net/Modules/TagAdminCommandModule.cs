@@ -1,6 +1,8 @@
 using gir.net.Application.Interfaces.Services;
 using gir.net.Configurations;
+using gir.net.Infra;
 using gir.net.Infra.Permissions.Preconditions;
+using gir.net.Views;
 using NetCord;
 using NetCord.Rest;
 using NetCord.Services.ApplicationCommands;
@@ -8,12 +10,18 @@ using NetCord.Services.ApplicationCommands;
 namespace gir.net.Modules;
 
 [SlashCommand("tags", "Manage tags", Contexts = [InteractionContextType.Guild])]
-[RequirePermission<ApplicationCommandContext>(PermissionLevel.Moderator)]
-public class TagAdminCommandModule(ITagService tagService) : ApplicationCommandModule<ApplicationCommandContext>
+public class TagAdminCommandModule(ITagService tagService) : GIRCommandModule
 {
+    [RequirePermission<ApplicationCommandContext>(PermissionLevel.Moderator)]
     [SubSlashCommand("add", "Create new tag")]
     public async Task<InteractionMessageProperties> AddTag(string name, string content, Attachment? image = null)
     {
+        var existingTag = await tagService.GetTagAsync(name);
+        if (existingTag != null)
+        {
+            return ErrorResponse($"Tag '{name}' already exists.");
+        }
+        
         var tag = new Domain.Entities.Tag 
         { 
             Name = name, 
@@ -36,10 +44,9 @@ public class TagAdminCommandModule(ITagService tagService) : ApplicationCommandM
         {
             await tagService.AddTagAsync(tag);
         }
+        
+        var tagContainer = TagContainer.CreateFrom(tag);
 
-        var message = new InteractionMessageProperties()
-            .WithContent($"Tag '{name}' added!");
-
-        return message;
+        return SuccessResponse("Tag created successfully!", tagContainer);
     }
 }
