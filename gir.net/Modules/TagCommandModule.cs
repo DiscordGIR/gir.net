@@ -36,7 +36,6 @@ public class TagCommandModule(ITagService tagService) : ApplicationCommandModule
             )
             .WithAccentColor(new(System.Drawing.Color.Salmon.ToArgb()));
 
-
         var message = new InteractionMessageProperties()
             .AddComponents(container)
             .WithFlags(MessageFlags.IsComponentsV2);
@@ -44,7 +43,6 @@ public class TagCommandModule(ITagService tagService) : ApplicationCommandModule
 
         return message;
     }
-
 
     public InteractionMessageProperties RespondError(string error)
     {

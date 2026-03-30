@@ -1,4 +1,6 @@
 using gir.net.Application.Interfaces.Services;
+using gir.net.Configurations;
+using gir.net.Infra.Permissions.Preconditions;
 using NetCord;
 using NetCord.Rest;
 using NetCord.Services.ApplicationCommands;
@@ -6,6 +8,7 @@ using NetCord.Services.ApplicationCommands;
 namespace gir.net.Modules;
 
 [SlashCommand("tags", "Manage tags", Contexts = [InteractionContextType.Guild])]
+[RequirePermission<ApplicationCommandContext>(PermissionLevel.Moderator)]
 public class TagAdminCommandModule(ITagService tagService) : ApplicationCommandModule<ApplicationCommandContext>
 {
     [SubSlashCommand("add", "Create new tag")]

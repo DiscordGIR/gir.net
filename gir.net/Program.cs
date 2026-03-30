@@ -3,11 +3,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using NetCord.Hosting.Gateway;
 using gir.net.Configurations;
+using gir.net.Infra.Permissions;
 using gir.net.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using NetCord.Hosting.Services;
 using NetCord.Hosting.Services.ApplicationCommands;
-using NetCord.Hosting.Services.Commands;
 using Microsoft.Extensions.Logging;
 using NetCord;
 using NetCord.Gateway;
@@ -30,6 +30,11 @@ class Program
 
         // Configure strongly typed settings
         builder.Services.Configure<Config>(builder.Configuration);
+        builder.Services.Configure<DiscordPermissionOptions>(
+            builder.Configuration.GetSection(DiscordPermissionOptions.SectionName));
+
+        builder.Services.AddSingleton<PermissionService>();
+        builder.Services.AddHostedService<PermissionRoleValidationHostedService>();
 
         var connectionString = builder.Configuration["DATABASE_CONNECTION_STRING"] ?? string.Empty;
         var discordToken = builder.Configuration["DISCORD_TOKEN"] ?? string.Empty;
@@ -49,7 +54,8 @@ class Program
             .AddDiscordGateway(options =>
             {
                 options.Token = discordToken;
-                options.Intents = GatewayIntents.GuildMessages | GatewayIntents.DirectMessages |
+                options.Intents = GatewayIntents.Guilds | GatewayIntents.GuildUsers |
+                                  GatewayIntents.GuildMessages | GatewayIntents.DirectMessages |
                                   GatewayIntents.MessageContent;
             })
             .AddApplicationCommands(options =>
