@@ -43,6 +43,7 @@ class Program
         builder.Services.AddScoped<gir.net.Domain.Interfaces.Repositories.IUserRepository, gir.net.Infrastructure.Repositories.UserRepository>();
         builder.Services.AddScoped<gir.net.Domain.Interfaces.Repositories.ITagRepository, gir.net.Infrastructure.Repositories.TagRepository>();
         builder.Services.AddScoped<gir.net.Application.Interfaces.Services.ITagService, gir.net.Application.Services.TagService>();
+        builder.Services.AddSingleton<gir.net.Application.Interfaces.Services.IImageStorageService, gir.net.Infrastructure.Services.CloudflareR2StorageService>();
 
         builder.Services
             .AddDiscordGateway(options =>
