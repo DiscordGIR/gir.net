@@ -6,7 +6,7 @@ using Color = System.Drawing.Color;
 
 namespace gir.net.Infra;
 
-public abstract class GIRCommandModule : ApplicationCommandModule<ApplicationCommandContext>
+public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext>
 {
     protected InteractionMessageProperties ErrorResponse(string message)
     {
@@ -49,11 +49,11 @@ public abstract class GIRCommandModule : ApplicationCommandModule<ApplicationCom
         return response;
     }
 
-    protected InteractionMessageProperties ContainerResponse(ComponentContainerProperties container)
+    protected InteractionMessageProperties ContainerResponse(ComponentContainerProperties container, bool ephemralIfNoob = true)
     {
         var response = new InteractionMessageProperties()
             .WithComponents([container])
-            .WithFlags(MessageFlags.IsComponentsV2);
+            .WithFlags(MessageFlags.IsComponentsV2 | (ephemralIfNoob ? Context.WhisperFlagIfNoPermissions() : 0));
 
         return response;
     }

@@ -11,6 +11,8 @@ using NetCord.Hosting.Services.ApplicationCommands;
 using Microsoft.Extensions.Logging;
 using NetCord;
 using NetCord.Gateway;
+using gir.net.Infra;
+using NetCord.Services.ApplicationCommands;
 
 namespace gir.net;
 
@@ -58,9 +60,11 @@ class Program
                                   GatewayIntents.GuildMessages | GatewayIntents.DirectMessages |
                                   GatewayIntents.MessageContent;
             })
-            .AddApplicationCommands(options =>
+            .AddApplicationCommands<ApplicationCommandInteraction, GIRContext, AutocompleteInteractionContext>(options =>
             {
                 options.DefaultContexts = [InteractionContextType.Guild];
+                options.CreateContext = (interaction, client, services) =>
+                    new GIRContext(interaction, client!, services.GetRequiredService<PermissionService>());
             });
         
         var host = builder.Build();

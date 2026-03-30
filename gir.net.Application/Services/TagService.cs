@@ -34,4 +34,10 @@ public class TagService(ITagRepository tagRepository, IImageStorageService stora
     {
         return tagRepository.DeleteTagAsync(name);
     }
+
+    public Task MarkTagUsage(Tag tag)
+    {
+        tag.UseCount += 1;
+        return tagRepository.UpdateTagAsync(tag);
+    }
 }

@@ -28,6 +28,7 @@ public class PermissionService
     {
         _config = config;
         _permissionOptions = permissionOptions;
+        _channels = channels;
         _logger = logger;
         _levels = InitializeLevels();
     }
@@ -75,16 +76,16 @@ public class PermissionService
         return memberLevel >= requiredLevel;
     }
 
-    public MessageFlags? ShouldRespondEphemerally(GuildUser member, ulong channelId, RestGuild? guild)
+    public bool ShouldRespondEphemerally(GuildUser member, ulong channelId, RestGuild? guild)
     {
         if (Has(member, guild, PermissionLevel.Moderator))
-            return null;
+            return false;
 
         var botCommands = _channels.Value.BotCommands;
         if (botCommands is { } id && channelId == id)
-            return null;
+            return false;
 
-        return MessageFlags.Ephemeral;
+        return true;
     }
 
     public async Task CheckConfiguredRolesExistAsync(RestClient restClient, CancellationToken cancellationToken = default)

@@ -8,10 +8,9 @@ using NetCord.Services.ApplicationCommands;
 
 namespace gir.net.Modules;
 
-public class TagCommandModule(ITagService tagService) : GIRCommandModule
+public class TagBaseCommandModule(ITagService tagService) : GIRBaseCommandModule
 {
-    [RequireContext<ApplicationCommandContext>(RequiredContext.Guild),
-     SlashCommand("tag", "Gets a tag by name", Contexts = [InteractionContextType.Guild])]
+    [SlashCommand("tag", "Gets a tag by name")]
     public async Task<InteractionMessageProperties> GetTag(string name)
     {
         var tag = await tagService.GetTagAsync(name);
@@ -21,7 +20,8 @@ public class TagCommandModule(ITagService tagService) : GIRCommandModule
             return ErrorResponse($"No tag found with the name '{name}'");
         }
 
-        var tagContainer = TagContainer.CreateFrom(tag);
-        return ContainerResponse(tagContainer);
+        var tagContainer = TagView.CreateFrom(tag);
+        await tagService.MarkTagUsage(tag);
+        return ContainerResponse(tagContainer, ephemralIfNoob: false);
     }
 }

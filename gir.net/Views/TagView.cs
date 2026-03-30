@@ -3,7 +3,7 @@ using NetCord.Rest;
 
 namespace gir.net.Views;
 
-public static class TagContainer
+public static class TagView
 {
     public static ComponentContainerProperties CreateFrom(Tag tag)
     {

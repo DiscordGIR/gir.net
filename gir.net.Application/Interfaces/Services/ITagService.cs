@@ -9,4 +9,5 @@ public interface ITagService
     Task AddTagWithImageAsync(Tag tag, Stream imageStream, string fileName, string contentType);
     Task UpdateTagAsync(Tag tag);
     Task DeleteTagAsync(string name);
+    Task MarkTagUsage(Tag tag);
 }

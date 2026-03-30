@@ -5,14 +5,15 @@ using gir.net.Infra.Permissions.Preconditions;
 using gir.net.Views;
 using NetCord;
 using NetCord.Rest;
+using NetCord.Services;
 using NetCord.Services.ApplicationCommands;
 
 namespace gir.net.Modules;
 
-[SlashCommand("tags", "Manage tags", Contexts = [InteractionContextType.Guild])]
-public class TagAdminCommandModule(ITagService tagService) : GIRCommandModule
+[SlashCommand("tags", "Manage tags")]
+public class TagAdminCommandModule(ITagService tagService) : GIRBaseCommandModule
 {
-    [RequirePermission<ApplicationCommandContext>(PermissionLevel.Moderator)]
+    [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
     [SubSlashCommand("add", "Create new tag")]
     public async Task<InteractionMessageProperties> AddTag(string name, string content, Attachment? image = null)
     {
@@ -45,7 +46,7 @@ public class TagAdminCommandModule(ITagService tagService) : GIRCommandModule
             await tagService.AddTagAsync(tag);
         }
         
-        var tagContainer = TagContainer.CreateFrom(tag);
+        var tagContainer = TagView.CreateFrom(tag);
 
         return SuccessResponse("Tag created successfully!", tagContainer);
     }
