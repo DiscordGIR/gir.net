@@ -33,4 +33,14 @@ public class TagRepository(Db db) : ITagRepository
             await db.SaveChangesAsync();
         }
     }
+
+    public async Task<IEnumerable<Tag>> SearchTagsAsync(string searchText)
+    {
+        var tags = await db.Tags
+            .Where(t => string.IsNullOrEmpty(searchText) || t.Name.Contains(searchText))
+            .Take(25)
+            .ToListAsync();
+
+        return tags;
+    }
 }

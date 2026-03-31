@@ -8,4 +8,5 @@ public interface ITagRepository
     Task AddTagAsync(Tag tag);
     Task UpdateTagAsync(Tag tag);
     Task DeleteTagAsync(string name);
+    Task<IEnumerable<Tag>> SearchTagsAsync(string searchText);
 }

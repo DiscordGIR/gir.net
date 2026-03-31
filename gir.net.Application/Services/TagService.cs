@@ -40,4 +40,9 @@ public class TagService(ITagRepository tagRepository, IImageStorageService stora
         tag.UseCount += 1;
         return tagRepository.UpdateTagAsync(tag);
     }
+
+    public Task<IEnumerable<Tag>> SearchTagsAsync(string searchText)
+    {
+        return tagRepository.SearchTagsAsync(searchText);
+    }
 }

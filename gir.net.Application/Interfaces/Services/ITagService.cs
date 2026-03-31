@@ -10,4 +10,5 @@ public interface ITagService
     Task UpdateTagAsync(Tag tag);
     Task DeleteTagAsync(string name);
     Task MarkTagUsage(Tag tag);
+    Task<IEnumerable<Tag>> SearchTagsAsync(string searchText);
 }
