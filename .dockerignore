@@ -1,0 +1,10 @@
+**/.git
+**/.vs
+**/.idea
+**/bin
+**/obj
+**/*.user
+**/.env
+**/.env.*
+!**/.env.example
+**/temp_inspect
