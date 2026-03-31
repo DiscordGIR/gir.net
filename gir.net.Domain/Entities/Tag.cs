@@ -6,22 +6,21 @@ namespace gir.net.Domain.Entities;
 [Table("tags")]
 public class Tag
 {
-    [Key]
-    public string Name { get; set; } = string.Empty;
+    public int Id { get; set; }
+
+    public string Name { get; set; }
     
     [MaxLength(4096)]
-    public string Content { get; set; } = string.Empty;
+    public string Content { get; set; }
 
     [MaxLength(128)]
-    public string AddedByTag { get; set; } = string.Empty;
+    public string AddedByTag { get; set; }
     
-    public long AddedById { get; set; } = long.MaxValue;
+    public long AddedById { get; set; }
 
-    public DateTime AddedDate { get; set; } = DateTime.UtcNow;
+    public DateTime AddedDate { get; set; }
 
     public int UseCount { get; set; } = 0;
     
     public string? ImageUrl { get; set; }
-
-    public virtual ICollection<ButtonLink> ButtonLinks { get; set; } = new List<ButtonLink>();
 }

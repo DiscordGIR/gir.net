@@ -22,6 +22,7 @@ public class TagBaseCommandModule(ITagService tagService) : GIRBaseCommandModule
 
         var tagContainer = TagView.CreateFrom(tag);
         await tagService.MarkTagUsage(tag);
+        
         return ContainerResponse(tagContainer, ephemralIfNoob: false);
     }
 }

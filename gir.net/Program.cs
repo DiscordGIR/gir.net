@@ -56,16 +56,15 @@ class Program
             .AddDiscordGateway(options =>
             {
                 options.Token = discordToken;
-                options.Intents = GatewayIntents.Guilds | GatewayIntents.GuildUsers |
-                                  GatewayIntents.GuildMessages | GatewayIntents.DirectMessages |
-                                  GatewayIntents.MessageContent;
+                options.Intents = GatewayIntents.All;
             })
             .AddApplicationCommands<ApplicationCommandInteraction, GIRContext, AutocompleteInteractionContext>(options =>
             {
                 options.DefaultContexts = [InteractionContextType.Guild];
                 options.CreateContext = (interaction, client, services) =>
                     new GIRContext(interaction, client!, services.GetRequiredService<PermissionService>());
-            });
+            })
+            .AddGatewayHandlers(typeof(Program).Assembly);
         
         var host = builder.Build();
         
