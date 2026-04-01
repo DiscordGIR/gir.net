@@ -63,6 +63,7 @@ class Program
                 options.DefaultContexts = [InteractionContextType.Guild];
                 options.CreateContext = (interaction, client, services) =>
                     new GIRContext(interaction, client!, services.GetRequiredService<PermissionService>());
+                options.ResultHandler = new GIRCommandResultHandler<GIRContext>();
             })
             .AddGatewayHandlers(typeof(Program).Assembly);
         
