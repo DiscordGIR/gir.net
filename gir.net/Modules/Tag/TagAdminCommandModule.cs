@@ -13,6 +13,8 @@ namespace gir.net.Modules;
 [SlashCommand("tags", "Manage tags")]
 public class TagAdminCommandModule(ITagService tagService) : GIRBaseCommandModule
 {
+    private static readonly TagView _tagView = new();
+
     [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
     [SubSlashCommand("add", "Create new tag")]
     public async Task<InteractionMessageProperties> AddTag(string name, string content, Attachment? image = null)
@@ -46,7 +48,7 @@ public class TagAdminCommandModule(ITagService tagService) : GIRBaseCommandModul
             await tagService.AddTagAsync(tag);
         }
         
-        var tagContainer = TagView.CreateFrom(tag);
+        var tagContainer = _tagView.CreateFrom(tag);
 
         return SuccessResponse("Tag created successfully!", tagContainer);
     }

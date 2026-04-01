@@ -1,11 +1,12 @@
 using gir.net.Domain.Entities;
 using NetCord.Rest;
+using Color = System.Drawing.Color;
 
 namespace gir.net.Views;
 
-public static class TagView
+public sealed class TagView : BaseView, IView<Tag>
 {
-    public static ComponentContainerProperties CreateFrom(Tag tag)
+    public ComponentContainerProperties CreateFrom(Tag tag)
     {
         var components = new List<IComponentContainerComponentProperties>
         {
@@ -19,13 +20,6 @@ public static class TagView
         }
 
         components.Add(new TextDisplayProperties($"-# Created by {tag.AddedByTag} | Used {tag.UseCount} times"));
-
-        var container = new ComponentContainerProperties()
-            .WithComponents(
-                components
-            )
-            .WithAccentColor(new(System.Drawing.Color.Salmon.ToArgb()));
-        
-        return container;
+        return CreateContainer(components, Color.Salmon);
     }
 }
