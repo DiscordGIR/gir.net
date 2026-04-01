@@ -1,5 +1,6 @@
 using gir.net.Application.Interfaces.Services;
 using gir.net.Infra;
+using Microsoft.Extensions.Logging;
 using gir.net.Modules.Tag;
 using gir.net.Views;
 using NetCord;
@@ -9,7 +10,8 @@ using NetCord.Services.ApplicationCommands;
 
 namespace gir.net.Modules;
 
-public class TagCommandModule(ITagService tagService) : GIRBaseCommandModule
+public class TagCommandModule(ITagService tagService, ILogger<TagCommandModule> logger)
+    : GIRBaseCommandModule(logger)
 {
     private static readonly TagView _tagView = new();
 

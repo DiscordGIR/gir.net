@@ -4,6 +4,7 @@ using gir.net.Domain.Exceptions;
 using gir.net.Infra;
 using gir.net.Infra.Permissions.Preconditions;
 using gir.net.Views;
+using Microsoft.Extensions.Logging;
 using NetCord;
 using NetCord.Rest;
 using NetCord.Services;
@@ -12,7 +13,8 @@ using NetCord.Services.ApplicationCommands;
 namespace gir.net.Modules;
 
 [SlashCommand("tags", "Manage tags")]
-public class TagAdminCommandModule(ITagService tagService) : GIRBaseCommandModule
+public class TagAdminCommandModule(ITagService tagService, ILogger<TagAdminCommandModule> logger)
+    : GIRBaseCommandModule(logger)
 {
     private static readonly TagView _tagView = new();
 

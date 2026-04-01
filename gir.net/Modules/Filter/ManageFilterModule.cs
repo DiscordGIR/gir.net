@@ -4,13 +4,15 @@ using gir.net.Domain.Entities;
 using gir.net.Domain.Exceptions;
 using gir.net.Infra;
 using gir.net.Infra.Permissions.Preconditions;
+using Microsoft.Extensions.Logging;
 using NetCord.Rest;
 using NetCord.Services.ApplicationCommands;
 
 namespace gir.net.Modules.Filter;
 
 [SlashCommand("filter", "Manage filter")]
-public class ManageFilterModule(IFilterService filterService) : GIRBaseCommandModule
+public class ManageFilterModule(IFilterService filterService, ILogger<ManageFilterModule> logger)
+    : GIRBaseCommandModule(logger)
 {
     [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
     [SubSlashCommand("add", "Add a word to the filter")]
@@ -37,6 +39,7 @@ public class ManageFilterModule(IFilterService filterService) : GIRBaseCommandMo
             return ErrorResponse($"'{word}' is already filtered.");
         }
 
+        ScheduleResponseDeleteAfter(TimeSpan.FromSeconds(5));
         return SuccessResponse($"Added new word to the filter!", $"This filter {(filterWord.Notify ? "will" : "will not")} ping for reports, level {(PermissionLevel)filterWord.BypassLevel} can bypass it, and the phrase is `{filterWord.Phrase}`");
     }
 }

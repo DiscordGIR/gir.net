@@ -1,19 +1,53 @@
 using gir.net.Views;
+using Microsoft.Extensions.Logging;
 using NetCord;
 using NetCord.Rest;
 using NetCord.Services.ApplicationCommands;
-using NetCord.Services.Commands;
 
 namespace gir.net.Infra;
 
 public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext>
 {
-    private static readonly ErrorView _errorView = new();
-    private static readonly SuccessView _successView = new();
+    private static readonly TimeSpan MinOriginalResponseDeleteDelay = TimeSpan.FromMilliseconds(500);
+
+    private static readonly ErrorView ErrorView = new();
+    private static readonly SuccessView SuccessView = new();
+
+    private readonly ILogger _logger;
+
+    protected GIRBaseCommandModule(ILogger logger)
+    {
+        _logger = logger;
+    }
+
+    protected void ScheduleResponseDeleteAfter(TimeSpan deleteAfter,
+        CancellationToken cancellationToken = default)
+    {
+        var interaction = Context.Interaction;
+        var delay = deleteAfter < MinOriginalResponseDeleteDelay ? MinOriginalResponseDeleteDelay : deleteAfter;
+
+        _ = DeleteAfterAsync();
+
+        async Task DeleteAfterAsync()
+        {
+            try
+            {
+                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+                await interaction.DeleteResponseAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to auto-delete the original interaction response.");
+            }
+        }
+    }
 
     protected InteractionMessageProperties ErrorResponse(string message)
     {
-        var container = _errorView.CreateFrom(message);
+        var container = ErrorView.CreateFrom(message);
         
         var response = new InteractionMessageProperties()
             .WithComponents([container])
@@ -25,7 +59,7 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
     protected InteractionMessageProperties SuccessResponse(string message,
         ComponentContainerProperties? extraContainer = null)
     {
-        var container = _successView.CreateFrom(message);
+        var container = SuccessView.CreateFrom(message);
 
         var responseComponents = new List<ComponentContainerProperties>()
         {
@@ -44,7 +78,7 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
 
     protected InteractionMessageProperties SuccessResponse(string title, string message)
     {
-        var container = _successView.CreateFrom(message);
+        var container = SuccessView.CreateFrom(title, message);
 
         var responseComponents = new List<ComponentContainerProperties>()
         {
