@@ -21,21 +21,10 @@ public class TagRepository(Db db) : ITagRepository
             await db.Tags.AddAsync(tag);
             await db.SaveChangesAsync();
         }
-        catch (DbUpdateException ex) when (IsPostgresUniqueViolation(ex))
+        catch (DbUpdateException ex) when (DbHelpers.IsPostgresUniqueViolation(ex))
         {
             throw new DuplicateTagNameException(tag.Name, ex);
         }
-    }
-
-    private static bool IsPostgresUniqueViolation(DbUpdateException ex)
-    {
-        for (var inner = ex.InnerException; inner != null; inner = inner.InnerException)
-        {
-            if (inner is PostgresException pg && pg.SqlState == PostgresErrorCodes.UniqueViolation)
-                return true;
-        }
-
-        return false;
     }
 
     public async Task UpdateTagAsync(Tag tag)

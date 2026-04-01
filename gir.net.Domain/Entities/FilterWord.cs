@@ -7,7 +7,7 @@ namespace gir.net.Domain.Entities;
 public class FilterWord
 {
     public int Id { get; set; }
-    public string Word { get; set; }
+    public string Phrase { get; set; }
     public bool Notify { get; set; }
     public DateTime CreatedAt { get; set; } = new DateTime();
     public DateTime UpdatedAt { get; set; } = new DateTime();

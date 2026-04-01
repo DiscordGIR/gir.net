@@ -14,5 +14,9 @@ public class Db(DbContextOptions<Db> options) : DbContext(options)
         modelBuilder.Entity<Tag>()
             .HasIndex(t => t.Name)
             .IsUnique();
+        
+        modelBuilder.Entity<FilterWord>()
+            .HasIndex(t => t.Phrase)
+            .IsUnique();
     }
 }

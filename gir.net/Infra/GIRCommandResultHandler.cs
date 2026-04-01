@@ -13,6 +13,7 @@ public class GIRCommandResultHandler<TContext>(MessageFlags? messageFlags = null
     where TContext : GIRContext
 {
     private static readonly ErrorView _errorView = new();
+    private const int MESSAGE_CONTENT_LIMIT = 4000;
 
     public ValueTask HandleResultAsync(IExecutionResult result, TContext context, GatewayClient? client, ILogger logger, IServiceProvider services)
     {
@@ -34,6 +35,11 @@ public class GIRCommandResultHandler<TContext>(MessageFlags? messageFlags = null
         else
         {
             logger.LogDebug("Execution of an application command of name '{Name}' failed with '{Message}'", interaction.Data.Name, resultMessage);
+        }
+
+        if (resultMessage.Length >= MESSAGE_CONTENT_LIMIT)
+        {
+            resultMessage = resultMessage.Substring(0, MESSAGE_CONTENT_LIMIT - 500) + "...\n```";
         }
         
         var errorView = _errorView.CreateFrom(resultMessage);

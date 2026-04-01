@@ -42,6 +42,22 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
         return response;
     }
 
+    protected InteractionMessageProperties SuccessResponse(string title, string message)
+    {
+        var container = _successView.CreateFrom(message);
+
+        var responseComponents = new List<ComponentContainerProperties>()
+        {
+            container
+        };
+        
+        var response = new InteractionMessageProperties()
+            .WithComponents(responseComponents)
+            .WithFlags(MessageFlags.IsComponentsV2);
+
+        return response;
+    }
+
     protected InteractionMessageProperties ContainerResponse(ComponentContainerProperties container, bool ephemralIfNoob = true)
     {
         var response = new InteractionMessageProperties()

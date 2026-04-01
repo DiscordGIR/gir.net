@@ -14,4 +14,15 @@ public sealed class SuccessView : BaseView, IView<string>
             Color.Green
         );
     }
+
+    public ComponentContainerProperties CreateFrom(string title, string message)
+    {
+        return CreateContainer(
+            [
+                new TextDisplayProperties($"### {title}"),
+                new TextDisplayProperties(message),
+            ],
+            Color.Green
+        );
+    }
 }

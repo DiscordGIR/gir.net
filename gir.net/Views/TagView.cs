@@ -22,4 +22,9 @@ public sealed class TagView : BaseView, IView<Tag>
         components.Add(new TextDisplayProperties($"-# Created by {tag.AddedByTag} | Used {tag.UseCount} times"));
         return CreateContainer(components, Color.Salmon);
     }
+
+    public ComponentContainerProperties CreateFrom(string title, Tag tag)
+    {
+        throw new NotImplementedException();
+    }
 }

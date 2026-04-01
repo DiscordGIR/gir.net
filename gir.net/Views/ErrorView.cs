@@ -17,4 +17,9 @@ public sealed class ErrorView : BaseView, IView<string>
             Color.OrangeRed
         );
     }
+
+    public ComponentContainerProperties CreateFrom(string title, string message)
+    {
+        throw new NotImplementedException();
+    }
 }
