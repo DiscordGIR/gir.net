@@ -66,6 +66,6 @@ public class FilterListView : BaseView, IPaginatedView<FilterWord>
         components.Add(actionRow);
         components.Add(new TextDisplayProperties($"-# Page {currentPage+1} of {totalPageCount}"));
 
-        return CreateContainer(components, Color.DarkGreen);
+        return CreateContainer(components);
     }
 }

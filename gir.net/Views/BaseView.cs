@@ -7,10 +7,16 @@ public abstract class BaseView
 {
     protected static ComponentContainerProperties CreateContainer(
         IEnumerable<IComponentContainerComponentProperties> components,
-        Color accentColor)
+        Color? accentColor = null)
     {
-        return new ComponentContainerProperties()
-            .WithComponents(components)
-            .WithAccentColor(new(accentColor.ToArgb()));
+        var container = new ComponentContainerProperties()
+            .WithComponents(components);
+
+        if (accentColor.HasValue)
+        {
+            container = container.WithAccentColor(new NetCord.Color(accentColor.Value.ToArgb()));
+        }
+
+        return container;
     }
 }
