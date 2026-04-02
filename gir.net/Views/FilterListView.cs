@@ -1,3 +1,4 @@
+using gir.net.Configurations;
 using gir.net.Domain.Entities;
 using NetCord;
 using NetCord.Rest;
@@ -23,20 +24,41 @@ public class FilterListView : BaseView, IPaginatedView<FilterWord>
 
         var components = new List<IComponentContainerComponentProperties>
         {
-            new TextDisplayProperties("### Filtered words")
+            new TextDisplayProperties("### Filtered words"),
+            new ComponentSeparatorProperties()
         };
 
-        filterWords.ForEach(fw => components.Add(
-            new TextDisplayProperties($"{fw.Phrase}"))
+        filterWords.ForEach(fw =>
+            {
+                var flags = "";
+                
+                if (fw.Notify)
+                    flags += "🔔";
+                if (fw.PiracyWord)
+                    flags += "🏴‍☠️";
+                if (fw.SilentFilter)
+                    flags += "🤫";
+                if (fw.FalsePositive)
+                    flags += "🤥";
+                
+                flags = !string.IsNullOrEmpty(flags) ? $"\n{flags}" : string.Empty;
+                
+                components.Add(new TextDisplayProperties($"**{fw.Phrase}**\nBypassed by {(PermissionLevel)fw.BypassLevel}{flags}"));
+                components.Add(new ComponentSeparatorProperties());
+            }
         );
         
         var more = (currentPage + 1) < totalPageCount;
 
         var actionRow = new ActionRowProperties().WithComponents(
             [
+                new ButtonProperties($"{id}:-2", "⏮️", ButtonStyle.Primary)
+                    .WithDisabled(currentPage < 1),
                 new ButtonProperties($"{id}:{currentPage - 1}", "⬅️", ButtonStyle.Primary)
                     .WithDisabled(currentPage < 1),
                 new ButtonProperties($"{id}:{currentPage + 1}", "➡️", ButtonStyle.Primary)
+                    .WithDisabled(!more),
+                new ButtonProperties($"{id}:{totalPageCount+2}", "⏭️", ButtonStyle.Primary)
                     .WithDisabled(!more)
             ]
         );
