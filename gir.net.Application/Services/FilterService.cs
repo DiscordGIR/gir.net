@@ -10,4 +10,11 @@ public class FilterService(IFilterRepository filterRepository) : IFilterService
     {
         await filterRepository.AddFilterWordAsync(filterWord);
     }
+
+    public async Task<IEnumerable<FilterWord>> GetFilterWordsPaginatedAsync(int page, int take)
+    {
+        return await filterRepository.GetFilteredWordsPaginatedAsync(page, take);
+    }
+
+    public Task<int> CountFilterWordsAsync() => filterRepository.CountFilterWordsAsync();
 }

@@ -20,4 +20,11 @@ public class FilterRepository(Db db) : IFilterRepository
             throw new DuplicateFilerWordException(filterWord.Phrase, ex);
         }
     }
+
+    public async Task<IEnumerable<FilterWord>> GetFilteredWordsPaginatedAsync(int page, int take)
+    {
+        return await db.FilterWords.OrderBy(fw => fw.Phrase).Skip(page * take).Take(take).ToListAsync();
+    }
+
+    public Task<int> CountFilterWordsAsync() => db.FilterWords.CountAsync();
 }

@@ -11,7 +11,10 @@ using NetCord.Services.ApplicationCommands;
 namespace gir.net.Modules.Filter;
 
 [SlashCommand("filter", "Manage filter")]
-public class ManageFilterModule(IFilterService filterService, ILogger<ManageFilterModule> logger)
+public class ManageFilterModule(
+    IFilterService filterService,
+    FilterListPageBuilder filterListPageBuilder,
+    ILogger<ManageFilterModule> logger)
     : GIRBaseCommandModule(logger)
 {
     [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
@@ -41,5 +44,13 @@ public class ManageFilterModule(IFilterService filterService, ILogger<ManageFilt
 
         ScheduleResponseDeleteAfter(TimeSpan.FromSeconds(5));
         return SuccessResponse($"Added new word to the filter!", $"This filter {(filterWord.Notify ? "will" : "will not")} ping for reports, level {(PermissionLevel)filterWord.BypassLevel} can bypass it, and the phrase is `{filterWord.Phrase}`");
+    }
+
+    [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
+    [SubSlashCommand("list", "List all words in the filter")]
+    public async Task<InteractionMessageProperties> ListWords()
+    {
+        var view = await filterListPageBuilder.BuildAsync(0);
+        return ContainerResponse(view, false);
     }
 }

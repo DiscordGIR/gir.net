@@ -5,4 +5,7 @@ namespace gir.net.Application.Interfaces.Services;
 public interface IFilterService
 {
     public Task AddFilterWordAsync(FilterWord filterWord);
+    Task<IEnumerable<FilterWord>> GetFilterWordsPaginatedAsync(int page, int take);
+    
+    Task<int> CountFilterWordsAsync();
 }
