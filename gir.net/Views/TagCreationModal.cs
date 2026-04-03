@@ -10,6 +10,7 @@ public class TagCreationModal : BaseView, IModalView<string>
             .WithComponents([
                     new LabelProperties("Content",
                         new TextInputProperties("create-tag-content", TextInputStyle.Paragraph)
+                            .WithPlaceholder("You can add up to 5 link buttons per line using the following format on a new line: ~{text}[link]{text}[link]")
                     ),
                     new LabelProperties("Images",
                         new FileUploadProperties("create-tag-images")
