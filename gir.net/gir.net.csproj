@@ -34,4 +34,8 @@
     <ProjectReference Include="..\gir.net.Infrastructure\gir.net.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Modules\Tag\Modal\" />
+  </ItemGroup>
+
 </Project>

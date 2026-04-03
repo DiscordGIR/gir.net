@@ -73,7 +73,8 @@ class Program
                 options.ResultHandler = new GIRCommandResultHandler<GIRContext>();
             })
             .AddGatewayHandlers(typeof(Program).Assembly)
-            .AddComponentInteractions<ButtonInteraction, ButtonInteractionContext>();
+            .AddComponentInteractions<ButtonInteraction, ButtonInteractionContext>()
+            .AddComponentInteractions<ModalInteraction, ModalInteractionContext>();
         
         var host = builder.Build();
         

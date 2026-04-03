@@ -16,44 +16,19 @@ namespace gir.net.Modules;
 public class TagAdminCommandModule(ITagService tagService, ILogger<TagAdminCommandModule> logger)
     : GIRBaseCommandModule(logger)
 {
-    private static readonly TagView _tagView = new();
+    private static readonly TagCreationModal TagCreationModal = new TagCreationModal();
 
     [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
     [SubSlashCommand("add", "Create new tag")]
-    public async Task<InteractionMessageProperties> AddTag(string name, string content, Attachment? image = null)
+    public async Task<InteractionCallbackProperties> AddTag(string name)
     {
-        var tag = new Domain.Entities.Tag 
-        { 
-            Name = name, 
-            Content = content,
-            AddedByTag = Context.User.Username,
-            AddedById = (long)Context.User.Id
-        };
-
-        try
+        if (tagService.GetTagAsync(name).Result != null)
         {
-            if (image != null)
-            {
-                using var httpClient = new HttpClient();
-                await using var stream = await httpClient.GetStreamAsync(image.Url);
-                await using var inMemoryStream = new MemoryStream();
-                await stream.CopyToAsync(inMemoryStream);
-                inMemoryStream.Seek(0, SeekOrigin.Begin);
-
-                await tagService.AddTagWithImageAsync(tag, inMemoryStream, image.FileName, image.ContentType ?? "application/octet-stream");
-            }
-            else
-            {
-                await tagService.AddTagAsync(tag);
-            }
+            var callback = InteractionCallback.Message(ErrorResponse($"Tag with name '{name}' is already exists."));
+            return callback;
         }
-        catch (DuplicateTagNameException)
-        {
-            return ErrorResponse($"Tag '{name}' already exists.");
-        }
-
-        var tagContainer = _tagView.CreateFrom(tag);
-
-        return SuccessResponse("Tag created successfully!", tagContainer);
+        
+        var modal = TagCreationModal.CreateFrom(name);
+        return InteractionCallback.Modal(modal);
     }
 }

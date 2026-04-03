@@ -21,6 +21,6 @@ public class Tag
     public DateTime AddedDate { get; set; }
 
     public int UseCount { get; set; } = 0;
-    
-    public string? ImageUrl { get; set; }
+
+    public List<string> ImageUrls { get; set; } = [];
 }

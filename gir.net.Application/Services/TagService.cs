@@ -18,11 +18,10 @@ public class TagService(ITagRepository tagRepository, IImageStorageService stora
         return tagRepository.AddTagAsync(tag);
     }
 
-    public async Task AddTagWithImageAsync(Tag tag, Stream imageStream, string fileName, string contentType)
+    public async Task<string> UploadTagImage(Stream imageStream, string fileName, string contentType)
     {
         string imageUrl = await storageService.UploadImageAsync(imageStream, fileName, contentType);
-        tag.ImageUrl = imageUrl;
-        await tagRepository.AddTagAsync(tag);
+        return imageUrl;
     }
 
     public Task UpdateTagAsync(Tag tag)

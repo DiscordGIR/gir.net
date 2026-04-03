@@ -40,9 +40,10 @@ public sealed class TagView : BaseView, IView<Tag>
             components.Add(new ActionRowProperties(buttons));
         });
 
-        if (!string.IsNullOrEmpty(tag.ImageUrl))
+        if (tag.ImageUrls.Count > 0)
         {
-            components.Add(new MediaGalleryProperties([new MediaGalleryItemProperties(tag.ImageUrl)]));
+            var items = tag.ImageUrls.Select(url => new MediaGalleryItemProperties(url)).ToArray();
+            components.Add(new MediaGalleryProperties(items));
         }
 
         components.Add(new TextDisplayProperties($"-# Created by {tag.AddedByTag} | Used {tag.UseCount} times"));
