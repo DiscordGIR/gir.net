@@ -96,8 +96,23 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
     {
         var response = new InteractionMessageProperties()
             .WithComponents([container])
-            .WithFlags(MessageFlags.IsComponentsV2 | (ephemralIfNoob ? Context.WhisperFlagIfNoPermissions() : 0));
+            .WithFlags(MessageFlags.IsComponentsV2 | (ephemralIfNoob && Context.ShouldWhisperIfNoPermissions() ? MessageFlags.Ephemeral : 0));
 
         return response;
+    }
+
+    protected async Task<InteractionCallbackResponse?> SendResponse(InteractionMessageProperties properties)
+    {
+        var callback = InteractionCallback.Message(properties);
+        return await RespondAsync(callback);
+    }
+    
+    protected async Task<RestMessage> SendEditResponse(InteractionMessageProperties properties)
+    {
+        return await ModifyResponseAsync(m =>
+        {
+            m.Components = properties.Components;
+            m.Flags = properties.Flags;
+        });
     }
 }

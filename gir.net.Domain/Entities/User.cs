@@ -6,7 +6,9 @@ namespace gir.net.Domain.Entities;
 [Table("users")]
 public class User
 {
-    public long Id { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public ulong Id { get; set; }
 
     public int Xp { get; set; } = 0;
 }

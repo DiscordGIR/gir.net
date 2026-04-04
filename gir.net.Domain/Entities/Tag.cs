@@ -18,7 +18,7 @@ public class Tag
     
     public long AddedById { get; set; }
 
-    public DateTime AddedDate { get; set; }
+    public DateTime AddedDate { get; set; } = DateTime.UtcNow;
 
     public int UseCount { get; set; } = 0;
 

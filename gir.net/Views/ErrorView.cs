@@ -20,6 +20,6 @@ public sealed class ErrorView : BaseView, IView<string>
 
     public ComponentContainerProperties CreateFrom(string title, string message)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

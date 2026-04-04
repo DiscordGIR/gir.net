@@ -12,16 +12,16 @@ public class GIRContext(
     PermissionService permissionService)
     : ApplicationCommandContext(interaction, client)
 {
-    public MessageFlags? WhisperFlagIfNoPermissions()
+    public bool ShouldWhisperIfNoPermissions()
     {
         if (Interaction.User is not GuildUser guildUser)
-            return MessageFlags.Ephemeral;
+            return true;
 
         if (Guild is not RestGuild restGuild)
-            return MessageFlags.Ephemeral;
+            return true;
 
-        return permissionService.ShouldRespondEphemerally(guildUser, Channel.Id, restGuild)
-            ? MessageFlags.Ephemeral
-            : null;
+        return permissionService.ShouldRespondEphemerally(guildUser, Channel.Id, restGuild);
     }
+    
+    public GuildUser BotGuildUser => Guild!.Users[Client.Id];
 }

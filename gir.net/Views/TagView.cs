@@ -52,6 +52,6 @@ public sealed class TagView : BaseView, IView<Tag>
 
     public ComponentContainerProperties CreateFrom(string title, Tag tag)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

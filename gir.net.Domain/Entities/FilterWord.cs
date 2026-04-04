@@ -9,8 +9,8 @@ public class FilterWord
     public int Id { get; set; }
     public string Phrase { get; set; }
     public bool Notify { get; set; }
-    public DateTime CreatedAt { get; set; } = new DateTime();
-    public DateTime UpdatedAt { get; set; } = new DateTime();
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public int BypassLevel { get; set; }
     public bool FalsePositive { get; set; } = false;
     public bool SilentFilter { get; set; } = false;

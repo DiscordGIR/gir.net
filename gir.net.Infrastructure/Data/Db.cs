@@ -11,6 +11,10 @@ public class Db(DbContextOptions<Db> options) : DbContext(options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>()
+            .Property(u => u.Id)
+            .ValueGeneratedNever();
+
         modelBuilder.Entity<Tag>()
             .HasIndex(t => t.Name)
             .IsUnique();
