@@ -53,8 +53,10 @@ class Program
         builder.Services.AddScoped<gir.net.Domain.Interfaces.Repositories.IUserRepository, gir.net.Infrastructure.Repositories.UserRepository>();
         builder.Services.AddScoped<gir.net.Domain.Interfaces.Repositories.ITagRepository, gir.net.Infrastructure.Repositories.TagRepository>();
         builder.Services.AddScoped<gir.net.Domain.Interfaces.Repositories.IFilterRepository, gir.net.Infrastructure.Repositories.FilterRepository>();
+        builder.Services.AddScoped<gir.net.Domain.Interfaces.Repositories.ICaseRepository, gir.net.Infrastructure.Repositories.CaseRepository>();
         builder.Services.AddScoped<gir.net.Application.Interfaces.Services.ITagService, gir.net.Application.Services.TagService>();
         builder.Services.AddScoped<gir.net.Application.Interfaces.Services.IFilterService, gir.net.Application.Services.FilterService>();
+        builder.Services.AddScoped<gir.net.Application.Interfaces.Services.ICaseService, gir.net.Application.Services.CaseService>();
         builder.Services.AddScoped<FilterListPageBuilder>();
         builder.Services.AddSingleton<gir.net.Application.Interfaces.Services.IImageStorageService, gir.net.Infrastructure.Services.CloudflareR2StorageService>();
 

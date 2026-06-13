@@ -96,7 +96,8 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
     {
         var response = new InteractionMessageProperties()
             .WithComponents([container])
-            .WithFlags(MessageFlags.IsComponentsV2 | (ephemralIfNoob && Context.ShouldWhisperIfNoPermissions() ? MessageFlags.Ephemeral : 0));
+            .WithFlags(MessageFlags.IsComponentsV2 |
+                       (ephemralIfNoob && Context.ShouldWhisperIfNoPermissions() ? MessageFlags.Ephemeral : 0));
 
         return response;
     }

@@ -8,6 +8,7 @@ public class Db(DbContextOptions<Db> options) : DbContext(options)
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Tag> Tags { get; set; } = null!;
     public DbSet<FilterWord> FilterWords { get; set; }
+    public DbSet<Case> Cases { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,5 +23,8 @@ public class Db(DbContextOptions<Db> options) : DbContext(options)
         modelBuilder.Entity<FilterWord>()
             .HasIndex(t => t.Phrase)
             .IsUnique();
+
+        modelBuilder.Entity<Case>()
+            .HasIndex(c => c.UserId);
     }
 }
