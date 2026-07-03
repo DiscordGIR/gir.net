@@ -42,6 +42,7 @@ class Program
             builder.Configuration.GetSection(DiscordChannels.SectionName));
 
         builder.Services.AddSingleton<PermissionService>();
+        builder.Services.AddSingleton<GuildMemberHierarchyService>();
         builder.Services.AddSingleton<ICaseDeliveryService, CaseDeliveryService>();
         builder.Services.AddHostedService<PermissionRoleValidationHostedService>();
 

@@ -20,7 +20,9 @@ public class ModActionsModule(
     [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
     [SlashCommand("warn", "Warn a user")]
     public async Task Warn(
-        [SlashCommandParameter(Description = "User to warn")] User user,
+        [SlashCommandParameter(Description = "User to warn")]
+        [RequireValidInvokee<GIRContext>]
+        User user,
         [SlashCommandParameter(Description = "Points to warn for", MinValue = 1)] int points,
         [SlashCommandParameter(Description = "Reason for warning")] string reason
     )
