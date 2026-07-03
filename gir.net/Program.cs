@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using NetCord;
 using NetCord.Gateway;
 using gir.net.Infra;
+using gir.net.Infra.Services;
 using gir.net.Modules.Filter;
 using NetCord.Hosting.Services.ComponentInteractions;
 using NetCord.Services.ApplicationCommands;
@@ -37,8 +38,11 @@ class Program
         builder.Services.Configure<Config>(builder.Configuration);
         builder.Services.Configure<DiscordPermissionOptions>(
             builder.Configuration.GetSection(DiscordPermissionOptions.SectionName));
+        builder.Services.Configure<DiscordChannels>(
+            builder.Configuration.GetSection(DiscordChannels.SectionName));
 
         builder.Services.AddSingleton<PermissionService>();
+        builder.Services.AddSingleton<ICaseDeliveryService, CaseDeliveryService>();
         builder.Services.AddHostedService<PermissionRoleValidationHostedService>();
 
         var connectionString = builder.Configuration["DATABASE_CONNECTION_STRING"] ?? string.Empty;

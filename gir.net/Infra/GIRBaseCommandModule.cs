@@ -57,7 +57,7 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
     }
 
     protected InteractionMessageProperties SuccessResponse(string message,
-        ComponentContainerProperties? extraContainer = null)
+        ComponentContainerProperties? extraContainer = null, AllowedMentionsProperties? allowedMentionsProperties = null)
     {
         var container = SuccessView.CreateFrom(message);
 
@@ -71,9 +71,15 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
 
         var response = new InteractionMessageProperties()
             .WithComponents(responseComponents)
-            .WithFlags(MessageFlags.IsComponentsV2);
+            .WithFlags(MessageFlags.IsComponentsV2)
+            .WithAllowedMentions(allowedMentionsProperties ?? AllowedMentionsProperties.None);
 
         return response;
+    }
+    
+    protected async Task DeferResponse(MessageFlags flags = default)
+    {
+        await RespondAsync(InteractionCallback.DeferredMessage(flags));
     }
 
     protected InteractionMessageProperties SuccessResponse(string title, string message)
@@ -92,12 +98,16 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
         return response;
     }
 
-    protected InteractionMessageProperties ContainerResponse(ComponentContainerProperties container, bool ephemralIfNoob = true)
+    protected InteractionMessageProperties ContainerResponse(
+        ComponentContainerProperties container,
+        bool ephemralIfNoob = true,
+        AllowedMentionsProperties? allowedMentions = null)
     {
         var response = new InteractionMessageProperties()
             .WithComponents([container])
             .WithFlags(MessageFlags.IsComponentsV2 |
-                       (ephemralIfNoob && Context.ShouldWhisperIfNoPermissions() ? MessageFlags.Ephemeral : 0));
+                       (ephemralIfNoob && Context.ShouldWhisperIfNoPermissions() ? MessageFlags.Ephemeral : 0))
+            .WithAllowedMentions(allowedMentions ?? AllowedMentionsProperties.None);
 
         return response;
     }
@@ -112,8 +122,10 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
     {
         return await ModifyResponseAsync(m =>
         {
+            m.Content = properties.Content;
             m.Components = properties.Components;
             m.Flags = properties.Flags;
+            m.AllowedMentions = properties.AllowedMentions;
         });
     }
 }

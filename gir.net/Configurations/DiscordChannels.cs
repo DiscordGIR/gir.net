@@ -5,4 +5,5 @@ public class DiscordChannels
     
     public const string SectionName = "Discord:Channels";
     public ulong? BotCommands { get; set; }
+    public ulong? PublicModLogs { get; set; }
 }

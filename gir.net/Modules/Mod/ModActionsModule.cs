@@ -2,6 +2,8 @@ using gir.net.Application.Interfaces.Services;
 using gir.net.Configurations;
 using gir.net.Infra;
 using gir.net.Infra.Permissions.Preconditions;
+using gir.net.Infra.Services;
+using gir.net.Views;
 using Microsoft.Extensions.Logging;
 using NetCord;
 using NetCord.Rest;
@@ -9,32 +11,38 @@ using NetCord.Services.ApplicationCommands;
 
 namespace gir.net.Modules.Mod;
 
-public class ModActionsModule(ICaseService caseService, ILogger<ModActionsModule> logger)
+public class ModActionsModule(
+    ICaseService caseService,
+    ICaseDeliveryService caseDeliveryService,
+    ILogger<ModActionsModule> logger)
     : GIRBaseCommandModule(logger)
 {
     [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
     [SlashCommand("warn", "Warn a user")]
-    public async Task<InteractionMessageProperties> Warn(
+    public async Task Warn(
         [SlashCommandParameter(Description = "User to warn")] User user,
         [SlashCommandParameter(Description = "Points to warn for", MinValue = 1)] int points,
         [SlashCommandParameter(Description = "Reason for warning")] string reason
     )
     {
-        if (Context.Interaction.User is not GuildUser guildUser)
-            return ErrorResponse("This command can only be used in a server.");
+        var moderator = (GuildUser)Context.Interaction.User;
+        await DeferResponse();
 
-        var modTag = guildUser.Username;
+        var modTag = moderator.Username;
+        var warnCase = await caseService.RecordWarnAsync(user.Id, moderator.Id, modTag, points, reason);
+        var container = new WarnCaseView().CreateFrom(warnCase, user, moderator);
 
-        try
+        var pingInPublic = false;
+        if (user is GuildUser)
         {
-            var warnCase = await caseService.RecordWarnAsync(user.Id, guildUser.Id, modTag, points, reason);
-            return SuccessResponse(
-                "Warning recorded",
-                $"Case #{warnCase.Id} · {warnCase.Punishment} · {user}");
+            pingInPublic = await caseDeliveryService.TryDeliverDirectMessageAsync(user.Id, container);
         }
-        catch (ArgumentException ex)
-        {
-            return ErrorResponse(ex.Message);
-        }
+
+        await SendEditResponse(ContainerResponse(container, ephemralIfNoob: false));
+        ScheduleResponseDeleteAfter(TimeSpan.FromSeconds(10));
+
+        await caseDeliveryService.TryDeliverPublicModLogAsync(
+            container,
+            userToPing: pingInPublic ? null : user.Id);
     }
 }
