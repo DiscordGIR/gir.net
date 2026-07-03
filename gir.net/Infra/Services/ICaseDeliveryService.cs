@@ -7,6 +7,7 @@ public interface ICaseDeliveryService
     Task<bool> TryDeliverDirectMessageAsync(
         ulong targetUserId,
         ComponentContainerProperties container,
+        string? content = null,
         CancellationToken cancellationToken = default);
 
     Task<bool> TryDeliverPublicModLogAsync(

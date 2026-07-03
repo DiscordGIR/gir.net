@@ -37,7 +37,11 @@ public class ModActionsModule(
         var pingInPublic = false;
         if (user is GuildUser)
         {
-            pingInPublic = await caseDeliveryService.TryDeliverDirectMessageAsync(user.Id, container);
+            var guildName = Context.Guild?.Name ?? "the server";
+            pingInPublic = await caseDeliveryService.TryDeliverDirectMessageAsync(
+                user.Id,
+                container,
+                $"You were warned in {guildName}. Please note that you will be kicked at 400 points and banned at 600 points.");
         }
 
         await SendEditResponse(ContainerResponse(container, ephemralIfNoob: false));

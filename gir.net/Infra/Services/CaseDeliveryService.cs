@@ -15,13 +15,14 @@ public class CaseDeliveryService(
     public async Task<bool> TryDeliverDirectMessageAsync(
         ulong targetUserId,
         ComponentContainerProperties container,
+        string? content = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
             var dmChannel = await client.Rest.GetDMChannelAsync(targetUserId, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
-            await dmChannel.SendMessageAsync(ToMessage(container), cancellationToken: cancellationToken)
+            await dmChannel.SendMessageAsync(ToMessage(container, content: content), cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
             return true;
         }
@@ -46,7 +47,7 @@ public class CaseDeliveryService(
 
         try
         {
-            await client.Rest.SendMessageAsync(id, ToMessage(container, userToPing),
+            await client.Rest.SendMessageAsync(id, ToMessage(container, mentionUserId: userToPing),
                     cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
             return true;
@@ -58,7 +59,10 @@ public class CaseDeliveryService(
         }
     }
 
-    private static MessageProperties ToMessage(ComponentContainerProperties container, ulong? mentionUserId = null)
+    private static MessageProperties ToMessage(
+        ComponentContainerProperties container,
+        ulong? mentionUserId = null,
+        string? content = null)
     {
         var message = new MessageProperties()
             .WithComponents([container])
@@ -66,6 +70,9 @@ public class CaseDeliveryService(
             .WithAllowedMentions(mentionUserId is { } userId
                 ? new AllowedMentionsProperties().WithAllowedUsers([userId])
                 : AllowedMentionsProperties.None);
+
+        if (content is not null)
+            message = message.WithContent(content);
 
         return message;
     }
