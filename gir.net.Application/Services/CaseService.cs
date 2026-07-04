@@ -33,6 +33,13 @@ public class CaseService(ICaseRepository caseRepository, IUserRepository userRep
         return entity;
     }
 
+    public async Task<Case> RecordUnbanAsync(ulong userId, ulong modId, string modTag, string reason)
+    {
+        var entity = ModerationCaseFactory.CreateUnban(userId, modId, modTag, reason);
+        await caseRepository.AddCaseAsync(entity);
+        return entity;
+    }
+
     public Task MarkWarnKickedAsync(ulong userId) =>
         userRepository.SetWasWarnKickedAsync(userId);
 

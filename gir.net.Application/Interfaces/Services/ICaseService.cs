@@ -8,6 +8,7 @@ public interface ICaseService
     Task<WarnRecordResult> RecordWarnAsync(ulong userId, ulong modId, string modTag, int points, string reason);
     Task<Case> RecordKickAsync(ulong userId, ulong modId, string modTag, string reason);
     Task<Case> RecordBanAsync(ulong userId, ulong modId, string modTag, string reason);
+    Task<Case> RecordUnbanAsync(ulong userId, ulong modId, string modTag, string reason);
     Task MarkWarnKickedAsync(ulong userId);
 
     Task<Case?> GetByIdAsync(int id);
