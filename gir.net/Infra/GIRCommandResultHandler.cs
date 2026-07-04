@@ -52,7 +52,7 @@ public class GIRCommandResultHandler<TContext>(MessageFlags? messageFlags = null
             .WithComponents([errorView])
             .WithFlags(
                 MessageFlags.IsComponentsV2 |
-                (context.InteractionResponded ? 0 : MessageFlags.Ephemeral));
+                MessageFlags.Ephemeral);
 
         await SendErrorResponseAsync(interaction, context.InteractionResponded, message);
     }
