@@ -13,14 +13,14 @@ public class GuildMemberHierarchyService
         if (target.Id == botUserId)
             return HierarchyCheckResult.Denied("You can't call that on me :(");
 
-        if (target is not GuildUser targetMember)
-            return HierarchyCheckResult.Denied("That user isn't in this server.");
+        if (target is GuildUser targetMember)
+        {
+            var actorPosition = GetHighestRolePosition(guild, actor);
+            var targetPosition = GetHighestRolePosition(guild, targetMember);
 
-        var actorPosition = GetHighestRolePosition(guild, actor);
-        var targetPosition = GetHighestRolePosition(guild, targetMember);
-
-        if (actorPosition <= targetPosition)
-            return HierarchyCheckResult.Denied($"{targetMember}'s top role is the same or higher than yours!");
+            if (actorPosition <= targetPosition)
+                return HierarchyCheckResult.Denied($"{targetMember}'s top role is the same or higher than yours!");
+        }
 
         return HierarchyCheckResult.Allowed();
     }

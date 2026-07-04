@@ -1,19 +1,22 @@
 using gir.net.Application.Interfaces.Services;
-using gir.net.Configurations;
 using gir.net.Infra;
 using gir.net.Infra.Permissions.Preconditions;
 using gir.net.Infra.Services;
 using gir.net.Views;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NetCord;
 using NetCord.Rest;
 using NetCord.Services.ApplicationCommands;
+using gir.net.Configurations;
 
 namespace gir.net.Modules.Mod;
 
 public class ModActionsModule(
     ICaseService caseService,
     ICaseDeliveryService caseDeliveryService,
+    IWarnThresholdEnforcementService warnThresholdEnforcement,
+    IOptions<Config> config,
     ILogger<ModActionsModule> logger)
     : GIRBaseCommandModule(logger)
 {
@@ -31,24 +34,24 @@ public class ModActionsModule(
         await DeferResponse();
 
         var modTag = moderator.Username;
-        var warnCase = await caseService.RecordWarnAsync(user.Id, moderator.Id, modTag, points, reason);
-        var container = new WarnCaseView().CreateFrom(warnCase, user, moderator);
+        var warnResult = await caseService.RecordWarnAsync(user.Id, moderator.Id, modTag, points, reason);
+        var container = new WarnCaseView().CreateFrom(
+            warnResult.Case, user, moderator, warnResult.CurrentWarnPoints);
 
-        var pingInPublic = false;
-        if (user is GuildUser)
-        {
-            var guildName = Context.Guild?.Name ?? "the server";
-            pingInPublic = await caseDeliveryService.TryDeliverDirectMessageAsync(
-                user.Id,
-                container,
-                $"You were warned in {guildName}. Please note that you will be kicked at 400 points and banned at 600 points.");
-        }
+        var guildId = config.Value.GuildId;
+        var guildName = Context.Guild?.Name ?? "the server";
+
+        var enforcement = await warnThresholdEnforcement.EnforceAsync(
+            guildId, guildName, user, moderator, warnResult, container);
 
         await SendEditResponse(ContainerResponse(container, ephemralIfNoob: false));
         ScheduleResponseDeleteAfter(TimeSpan.FromSeconds(10));
 
         await caseDeliveryService.TryDeliverPublicModLogAsync(
             container,
-            userToPing: pingInPublic ? null : user.Id);
+            userToPing: enforcement.DmDelivered ? null : user.Id);
+
+        if (enforcement.FollowUp is { } followUp)
+            await caseDeliveryService.TryDeliverPublicModLogAsync(followUp.Container);
     }
 }
