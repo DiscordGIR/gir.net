@@ -5,31 +5,28 @@ using Color = System.Drawing.Color;
 
 namespace gir.net.Views;
 
-public sealed class WarnCaseView : BaseView
+public sealed class KickCaseView : BaseView
 {
-    public ComponentContainerProperties CreateFrom(
-        Case warnCase, NetCord.User target, GuildUser mod, int currentWarnPoints)
+    public ComponentContainerProperties CreateFrom(Case kickCase, NetCord.User target, GuildUser mod)
     {
         var avatarUrl = target.GetAvatarUrl()?.ToString() ?? target.DefaultAvatarUrl.ToString();
         var thumbnail = new ComponentSectionThumbnailProperties(avatarUrl);
 
         return CreateContainer(
             [
-                new TextDisplayProperties("### Member Warned"),
+                new TextDisplayProperties("### Member Kicked"),
                 new ComponentSectionProperties(thumbnail)
                     .WithComponents(
                         [
                             new TextDisplayProperties($"**Member**\n{target.Username} ({target})"),
                             new TextDisplayProperties($"**Mod**\n{mod.Username} ({mod})"),
-                            new TextDisplayProperties($"**Increase**\n{warnCase.Punishment}"),
-                            new TextDisplayProperties($"**Current points**\n{currentWarnPoints}"),
                         ]
                     ),
-                new TextDisplayProperties($"**Reason**\n{warnCase.Reason}"),
+                new TextDisplayProperties($"**Reason**\n{kickCase.Reason}"),
                 new TextDisplayProperties(
-                    $"-# Case #{warnCase.Id} | {target.Id} · {new Timestamp(warnCase.Date, TimestampStyle.LongDateTime)}"),
+                    $"-# Case #{kickCase.Id} | {target.Id} · {new Timestamp(kickCase.Date, TimestampStyle.LongDateTime)}"),
             ],
-            Color.Orange
+            Color.Green
         );
     }
 }
