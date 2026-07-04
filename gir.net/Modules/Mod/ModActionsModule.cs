@@ -76,7 +76,7 @@ public class ModActionsModule(
 
         var container = new KickCaseView().CreateFrom(kickCase, user, moderator);
 
-        var dmDelivered = await caseDeliveryService.TryDeliverDirectMessageAsync(
+        await caseDeliveryService.TryDeliverDirectMessageAsync(
             user.Id,
             container,
             $"You were kicked from {guildName}.");
@@ -95,9 +95,7 @@ public class ModActionsModule(
         await Responder.ReplyAsync(container, ReplyOptions.Public);
         Responder.ScheduleDeleteAfter(TimeSpan.FromSeconds(10));
 
-        await caseDeliveryService.TryDeliverPublicModLogAsync(
-            container,
-            userToPing: dmDelivered ? null : user.Id);
+        await caseDeliveryService.TryDeliverPublicModLogAsync(container);
     }
 
     [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
