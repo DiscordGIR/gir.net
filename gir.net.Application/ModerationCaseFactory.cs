@@ -30,4 +30,40 @@ public static class ModerationCaseFactory
             LiftedDate = null
         };
     }
+
+    public static Case CreateKick(ulong userId, ulong modId, string modTag, string reason)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(modTag);
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+
+        return new Case
+        {
+            Type = CaseType.Kick,
+            Date = DateTime.UtcNow,
+            UserId = userId,
+            ModId = modId,
+            ModTag = modTag.Trim(),
+            Reason = reason.Trim(),
+            Punishment = string.Empty,
+            Lifted = false,
+        };
+    }
+
+    public static Case CreateBan(ulong userId, ulong modId, string modTag, string reason)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(modTag);
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+
+        return new Case
+        {
+            Type = CaseType.Ban,
+            Date = DateTime.UtcNow,
+            UserId = userId,
+            ModId = modId,
+            ModTag = modTag.Trim(),
+            Reason = reason.Trim(),
+            Punishment = "PERMANENT",
+            Lifted = false,
+        };
+    }
 }
