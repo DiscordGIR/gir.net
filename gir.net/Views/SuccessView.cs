@@ -1,5 +1,4 @@
 using NetCord.Rest;
-using Color = System.Drawing.Color;
 
 namespace gir.net.Views;
 
@@ -11,7 +10,7 @@ public sealed class SuccessView : BaseView, IView<string>
             [
                 new TextDisplayProperties(message),
             ],
-            Color.Green
+            DiscordColor.Green
         );
     }
 
@@ -22,7 +21,7 @@ public sealed class SuccessView : BaseView, IView<string>
                 new TextDisplayProperties($"### {title}"),
                 new TextDisplayProperties(message),
             ],
-            Color.Green
+            DiscordColor.Green
         );
     }
 }

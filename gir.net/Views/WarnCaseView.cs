@@ -1,8 +1,6 @@
 using gir.net.Domain.Entities;
 using NetCord;
 using NetCord.Rest;
-using Color = System.Drawing.Color;
-
 namespace gir.net.Views;
 
 public sealed class WarnCaseView : BaseView
@@ -30,7 +28,7 @@ public sealed class WarnCaseView : BaseView
                 new TextDisplayProperties(
                     $"-# Case #{warnCase.Id} | {target.Id} · {new Timestamp(warnCase.Date, TimestampStyle.LongDateTime)}"),
             ],
-            Color.Orange
+            DiscordColor.Orange
         );
     }
 }

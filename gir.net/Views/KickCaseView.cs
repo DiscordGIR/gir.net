@@ -1,8 +1,6 @@
 using gir.net.Domain.Entities;
 using NetCord;
 using NetCord.Rest;
-using Color = System.Drawing.Color;
-
 namespace gir.net.Views;
 
 public sealed class KickCaseView : BaseView
@@ -26,7 +24,7 @@ public sealed class KickCaseView : BaseView
                 new TextDisplayProperties(
                     $"-# Case #{kickCase.Id} | {target.Id} · {new Timestamp(kickCase.Date, TimestampStyle.LongDateTime)}"),
             ],
-            Color.Green
+            DiscordColor.Green
         );
     }
 }

@@ -1,8 +1,6 @@
 using gir.net.Domain.Entities;
 using NetCord;
 using NetCord.Rest;
-using Color = System.Drawing.Color;
-
 namespace gir.net.Views;
 
 public sealed class BanCaseView : BaseView
@@ -26,7 +24,7 @@ public sealed class BanCaseView : BaseView
                 new TextDisplayProperties(
                     $"-# Case #{banCase.Id} | {target.Id} · {new Timestamp(banCase.Date, TimestampStyle.LongDateTime)}"),
             ],
-            Color.Blue
+            DiscordColor.Blue
         );
     }
 }

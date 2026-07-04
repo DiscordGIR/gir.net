@@ -2,7 +2,6 @@ using gir.net.Configurations;
 using gir.net.Domain.Entities;
 using NetCord;
 using NetCord.Rest;
-using Color = System.Drawing.Color;
 
 namespace gir.net.Views;
 
@@ -18,7 +17,7 @@ public class FilterListView : BaseView, IPaginatedView<FilterWord>
                 [
                     new TextDisplayProperties("No filtered words found.")
                 ],
-                Color.DarkGreen
+                DiscordColor.DarkGreen
             );
         }
 
