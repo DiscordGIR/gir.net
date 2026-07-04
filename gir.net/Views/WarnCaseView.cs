@@ -21,10 +21,11 @@ public sealed class WarnCaseView : BaseView
                         [
                             new TextDisplayProperties($"**Member**\n{target.Username} ({target})"),
                             new TextDisplayProperties($"**Mod**\n{mod.Username} ({mod})"),
-                            new TextDisplayProperties($"**Increase**\n{warnCase.Punishment}"),
-                            new TextDisplayProperties($"**Current points**\n{currentWarnPoints}"),
+                            new TextDisplayProperties(
+                                $"**Increase**\n{warnCase.Punishment}"),
                         ]
                     ),
+                new TextDisplayProperties($"**Current points**\n{currentWarnPoints}"),
                 new TextDisplayProperties($"**Reason**\n{warnCase.Reason}"),
                 new TextDisplayProperties(
                     $"-# Case #{warnCase.Id} | {target.Id} · {new Timestamp(warnCase.Date, TimestampStyle.LongDateTime)}"),
