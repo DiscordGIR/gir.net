@@ -5,4 +5,5 @@ public class Config {
     public string Version { get; set; } = string.Empty;
     public ulong GuildId { get; set; }
     public ulong OwnerId { get; set; }
+    public string? BanAppealUrl { get; set; }
 }

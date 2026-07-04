@@ -44,6 +44,7 @@ class Program
         builder.Services.AddSingleton<PermissionService>();
         builder.Services.AddSingleton<GuildMemberHierarchyService>();
         builder.Services.AddSingleton<ICaseDeliveryService, CaseDeliveryService>();
+        builder.Services.AddScoped<IWarnThresholdEnforcementService, WarnThresholdEnforcementService>();
         builder.Services.AddHostedService<PermissionRoleValidationHostedService>();
 
         var connectionString = builder.Configuration["DATABASE_CONNECTION_STRING"] ?? string.Empty;
