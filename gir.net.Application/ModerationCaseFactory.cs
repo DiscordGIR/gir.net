@@ -31,6 +31,45 @@ public static class ModerationCaseFactory
         };
     }
 
+    public static Case CreateMute(
+        ulong userId, ulong modId, string modTag, string reason, DateTime endDate, string durationLabel)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(modTag);
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+        ArgumentException.ThrowIfNullOrWhiteSpace(durationLabel);
+
+        return new Case
+        {
+            Type = CaseType.Mute,
+            Date = DateTime.UtcNow,
+            EndDate = endDate,
+            UserId = userId,
+            ModId = modId,
+            ModTag = modTag.Trim(),
+            Reason = reason.Trim(),
+            Punishment = durationLabel,
+            Lifted = false,
+        };
+    }
+
+    public static Case CreateUnmute(ulong userId, ulong modId, string modTag, string reason)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(modTag);
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+
+        return new Case
+        {
+            Type = CaseType.Unmute,
+            Date = DateTime.UtcNow,
+            UserId = userId,
+            ModId = modId,
+            ModTag = modTag.Trim(),
+            Reason = reason.Trim(),
+            Punishment = string.Empty,
+            Lifted = false,
+        };
+    }
+
     public static Case CreateKick(ulong userId, ulong modId, string modTag, string reason)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(modTag);

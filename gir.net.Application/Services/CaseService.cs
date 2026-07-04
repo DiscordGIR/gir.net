@@ -40,6 +40,21 @@ public class CaseService(ICaseRepository caseRepository, IUserRepository userRep
         return entity;
     }
 
+    public async Task<Case> RecordMuteAsync(
+        ulong userId, ulong modId, string modTag, string reason, DateTime endDate, string durationLabel)
+    {
+        var entity = ModerationCaseFactory.CreateMute(userId, modId, modTag, reason, endDate, durationLabel);
+        await caseRepository.AddCaseAsync(entity);
+        return entity;
+    }
+
+    public async Task<Case> RecordUnmuteAsync(ulong userId, ulong modId, string modTag, string reason)
+    {
+        var entity = ModerationCaseFactory.CreateUnmute(userId, modId, modTag, reason);
+        await caseRepository.AddCaseAsync(entity);
+        return entity;
+    }
+
     public Task MarkWarnKickedAsync(ulong userId) =>
         userRepository.SetWasWarnKickedAsync(userId);
 

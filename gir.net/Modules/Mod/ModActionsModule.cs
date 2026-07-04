@@ -2,6 +2,7 @@ using System.Net;
 using gir.net.Application.Interfaces.Services;
 using gir.net.Configurations;
 using gir.net.Infra;
+using gir.net.Infra.Moderation;
 using gir.net.Infra.Permissions.Preconditions;
 using gir.net.Infra.Services;
 using gir.net.Views;
@@ -99,6 +100,120 @@ public class ModActionsModule(
     }
 
     [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
+    [SlashCommand("mute", "Mute a user")]
+    public async Task Mute(
+        [SlashCommandParameter(Description = "User to mute")]
+        [RequireValidInvokee<GIRContext>]
+        GuildUser user,
+        [SlashCommandParameter(Description = "Duration (e.g. 10m, 1h, 1d)")] string duration,
+        [SlashCommandParameter(Description = "Reason for mute")] string reason = "No reason."
+    )
+    {
+        if (!DurationParser.TryParse(duration, out var parsedDuration))
+        {
+            await Responder.ReplyErrorAsync("Please input a valid duration!");
+            return;
+        }
+
+        if (parsedDuration > TimeSpan.FromDays(14))
+        {
+            await Responder.ReplyErrorAsync("Mutes can't be longer than 14 days!");
+            return;
+        }
+
+        if (user.TimeOutUntil is { } until && until > DateTimeOffset.UtcNow)
+        {
+            await Responder.ReplyErrorAsync("This user is already muted.");
+            return;
+        }
+
+        var moderator = (GuildUser)Context.Interaction.User;
+        await Responder.DeferAsync();
+
+        var guildName = Context.Guild!.Name;
+        var timeoutUntil = DateTimeOffset.UtcNow.Add(parsedDuration);
+        var durationLabel = DurationParser.Format(parsedDuration);
+
+        try
+        {
+            await user.TimeOutAsync(timeoutUntil);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to mute user {UserId}", user.Id);
+            await Responder.ReplyErrorAsync("Failed to mute that user. Check my permissions and role hierarchy.");
+            return;
+        }
+
+        var muteCase = await caseService.RecordMuteAsync(
+            user.Id,
+            moderator.Id,
+            moderator.Username,
+            reason,
+            timeoutUntil.UtcDateTime,
+            durationLabel);
+        var container = new MuteCaseView().CreateFrom(muteCase, user, moderator);
+
+        await caseDeliveryService.TryDeliverDirectMessageAsync(
+            user.Id,
+            container,
+            $"You have been muted in {guildName}.");
+
+        await Responder.ReplyAsync(container, ReplyOptions.Public);
+        Responder.ScheduleDeleteAfter(TimeSpan.FromSeconds(10));
+
+        await caseDeliveryService.TryDeliverPublicModLogAsync(container);
+    }
+
+    [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
+    [SlashCommand("unmute", "Unmute a user")]
+    public async Task Unmute(
+        [SlashCommandParameter(Description = "User to unmute")]
+        [RequireValidInvokee<GIRContext>]
+        GuildUser user,
+        [SlashCommandParameter(Description = "Reason for unmute")] string reason
+    )
+    {
+        if (user.TimeOutUntil is not { } until || until <= DateTimeOffset.UtcNow)
+        {
+            await Responder.ReplyErrorAsync("This user is not muted.");
+            return;
+        }
+
+        var moderator = (GuildUser)Context.Interaction.User;
+        await Responder.DeferAsync();
+
+        var guildName = Context.Guild!.Name;
+
+        try
+        {
+            await Context.Guild.ModifyUserAsync(
+                user.Id,
+                options => options.TimeOutUntil = null);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to unmute user {UserId}", user.Id);
+            await Responder.ReplyErrorAsync("Failed to unmute that user. Check my permissions and role hierarchy.");
+            return;
+        }
+
+        var unmuteCase = await caseService.RecordUnmuteAsync(
+            user.Id, moderator.Id, moderator.Username, reason);
+        var container = new UnmuteCaseView().CreateFrom(unmuteCase, user, moderator);
+
+        await caseDeliveryService.TryDeliverDirectMessageAsync(
+            user.Id,
+            container,
+            $"You have been unmuted in {guildName}.");
+
+        await Responder.ReplyAsync(container, ReplyOptions.Public);
+        Responder.ScheduleDeleteAfter(TimeSpan.FromSeconds(10));
+
+        await caseDeliveryService.TryDeliverPublicModLogAsync(container);
+    }
+
+    [RequirePermission<GIRContext>(PermissionLevel.Moderator)]
     [SlashCommand("ban", "Ban a user")]
     public async Task Ban(
         [SlashCommandParameter(Description = "User to ban")]
@@ -113,7 +228,7 @@ public class ModActionsModule(
         {
             try
             {
-                await client.Rest.GetGuildBanAsync(config.Value.GuildId, user.Id);
+                await Context.Guild.GetBanAsync(user.Id);
                 await Responder.ReplyErrorAsync("That user is already banned!");
                 return;
             }

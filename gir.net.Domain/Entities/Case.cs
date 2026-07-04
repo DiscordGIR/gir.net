@@ -30,5 +30,6 @@ public enum CaseType
     Kick = 5,
     Ban = 6,
     Unban = 7,
-    Clem = 8
+    Clem = 8,
+    Unmute = 9,
 }
