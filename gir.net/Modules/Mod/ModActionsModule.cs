@@ -83,7 +83,7 @@ public class ModActionsModule(
 
         try
         {
-            await client.Rest.KickGuildUserAsync(config.Value.GuildId, user.Id);
+            await Context.Guild.KickUserAsync(user.Id);
         }
         catch (Exception ex)
         {
@@ -138,7 +138,7 @@ public class ModActionsModule(
 
         try
         {
-            await client.Rest.BanGuildUserAsync(config.Value.GuildId, user.Id);
+            await Context.Guild.BanUserAsync(user.Id);
         }
         catch (Exception ex)
         {
@@ -170,7 +170,7 @@ public class ModActionsModule(
 
         try
         {
-            await client.Rest.GetGuildBanAsync(config.Value.GuildId, user.Id);
+            await Context.Guild.GetBanAsync(user.Id);
         }
         catch (RestException ex) when (IsNotFound(ex))
         {
@@ -182,7 +182,7 @@ public class ModActionsModule(
 
         try
         {
-            await client.Rest.UnbanGuildUserAsync(config.Value.GuildId, user.Id);
+            await Context.Guild.UnbanUserAsync(user.Id);
         }
         catch (RestException ex) when (IsNotFound(ex))
         {
