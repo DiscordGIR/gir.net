@@ -11,4 +11,6 @@ public class User
     public ulong Id { get; set; }
 
     public int Xp { get; set; } = 0;
+    public int WarnPoints { get; set; }
+    public bool WasWarnKicked { get; set; }
 }
