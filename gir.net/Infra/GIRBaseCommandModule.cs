@@ -117,6 +117,17 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
         var callback = InteractionCallback.Message(properties);
         return await RespondAsync(callback);
     }
+
+    protected new async Task<InteractionCallbackResponse?> RespondAsync(
+        InteractionCallbackProperties callback,
+        bool withResponse = false,
+        RestRequestProperties? properties = null,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await base.RespondAsync(callback, withResponse, properties, cancellationToken);
+        Context.MarkInteractionResponded();
+        return response;
+    }
     
     protected async Task<RestMessage> SendEditResponse(InteractionMessageProperties properties)
     {

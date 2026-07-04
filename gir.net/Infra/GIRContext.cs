@@ -12,6 +12,10 @@ public class GIRContext(
     PermissionService permissionService)
     : ApplicationCommandContext(interaction, client)
 {
+    public bool InteractionResponded { get; private set; }
+
+    public void MarkInteractionResponded() => InteractionResponded = true;
+
     public bool ShouldWhisperIfNoPermissions()
     {
         if (Interaction.User is not GuildUser guildUser)
