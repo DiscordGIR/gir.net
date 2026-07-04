@@ -13,14 +13,14 @@ public class StatsModule(ILogger<StatsModule> logger) : GIRBaseCommandModule(log
     {
         var firstTime = DateTime.UtcNow;
         var view = new PingView(Context).CreateFrom($"**Latency**: testing...");
-        await SendResponse(ContainerResponse(view));
-        
+        await Responder.ReplyAsync(view);
+
         var secondTime = DateTime.UtcNow;
-        var delta =  secondTime - firstTime;
+        var delta = secondTime - firstTime;
         var formattedDelta = $"{Math.Ceiling(delta.TotalMilliseconds)}ms";
-        
-        var editedView =  new PingView(Context).CreateFrom($"**Latency**: {formattedDelta}");
-        await SendEditResponse(ContainerResponse(editedView));
+
+        var editedView = new PingView(Context).CreateFrom($"**Latency**: {formattedDelta}");
+        await Responder.ReplyAsync(editedView);
     }
 
     [SlashCommand("serverinfo", "xd")]

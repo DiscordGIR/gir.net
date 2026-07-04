@@ -31,7 +31,7 @@ public class ModActionsModule(
     )
     {
         var moderator = (GuildUser)Context.Interaction.User;
-        await DeferResponse();
+        await Responder.DeferAsync();
 
         var modTag = moderator.Username;
         var warnResult = await caseService.RecordWarnAsync(user.Id, moderator.Id, modTag, points, reason);
@@ -44,8 +44,8 @@ public class ModActionsModule(
         var enforcement = await warnThresholdEnforcement.EnforceAsync(
             guildId, guildName, user, moderator, warnResult, container);
 
-        await SendEditResponse(ContainerResponse(container, ephemralIfNoob: false));
-        ScheduleResponseDeleteAfter(TimeSpan.FromSeconds(10));
+        await Responder.ReplyAsync(container, ReplyOptions.Public);
+        Responder.ScheduleDeleteAfter(TimeSpan.FromSeconds(10));
 
         await caseDeliveryService.TryDeliverPublicModLogAsync(
             container,

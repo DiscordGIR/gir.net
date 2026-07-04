@@ -64,7 +64,7 @@ public class GIRCommandResultHandler<TContext>(MessageFlags? messageFlags = null
     {
         if (interactionResponded)
         {
-            await interaction.ModifyResponseAsync(m => ApplyMessage(m, message));
+            await interaction.ModifyResponseAsync(m => InteractionMessages.Apply(m, message));
             return;
         }
 
@@ -74,16 +74,8 @@ public class GIRCommandResultHandler<TContext>(MessageFlags? messageFlags = null
         }
         catch (RestException ex) when (IsAlreadyAcknowledged(ex))
         {
-            await interaction.ModifyResponseAsync(m => ApplyMessage(m, message));
+            await interaction.ModifyResponseAsync(m => InteractionMessages.Apply(m, message));
         }
-    }
-
-    private static void ApplyMessage(MessageOptions options, InteractionMessageProperties message)
-    {
-        options.Content = message.Content;
-        options.Components = message.Components;
-        options.Flags = message.Flags;
-        options.AllowedMentions = message.AllowedMentions;
     }
 
     private static bool IsAlreadyAcknowledged(RestException ex) =>

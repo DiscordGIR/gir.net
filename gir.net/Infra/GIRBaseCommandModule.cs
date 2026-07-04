@@ -14,11 +14,14 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
     private static readonly SuccessView SuccessView = new();
 
     private readonly ILogger _logger;
+    private InteractionResponder? _responder;
 
     protected GIRBaseCommandModule(ILogger logger)
     {
         _logger = logger;
     }
+
+    protected InteractionResponder Responder => _responder ??= new InteractionResponder(Context, _logger);
 
     protected void ScheduleResponseDeleteAfter(TimeSpan deleteAfter,
         CancellationToken cancellationToken = default)
@@ -48,12 +51,10 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
     protected InteractionMessageProperties ErrorResponse(string message)
     {
         var container = ErrorView.CreateFrom(message);
-        
-        var response = new InteractionMessageProperties()
-            .WithComponents([container])
-            .WithFlags(MessageFlags.Ephemeral | MessageFlags.IsComponentsV2);
-        
-        return response;
+
+        return InteractionMessages.FromContainer(
+            container,
+            MessageFlags.Ephemeral | MessageFlags.IsComponentsV2);
     }
 
     protected InteractionMessageProperties SuccessResponse(string message,
@@ -61,12 +62,9 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
     {
         var container = SuccessView.CreateFrom(message);
 
-        var responseComponents = new List<ComponentContainerProperties>()
-        {
-            container
-        };
-        
-        if  (extraContainer != null)
+        var responseComponents = new List<ComponentContainerProperties> { container };
+
+        if (extraContainer is not null)
             responseComponents.Add(extraContainer);
 
         var response = new InteractionMessageProperties()
@@ -76,26 +74,12 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
 
         return response;
     }
-    
-    protected async Task DeferResponse(MessageFlags flags = default)
-    {
-        await RespondAsync(InteractionCallback.DeferredMessage(flags));
-    }
 
     protected InteractionMessageProperties SuccessResponse(string title, string message)
     {
         var container = SuccessView.CreateFrom(title, message);
 
-        var responseComponents = new List<ComponentContainerProperties>()
-        {
-            container
-        };
-        
-        var response = new InteractionMessageProperties()
-            .WithComponents(responseComponents)
-            .WithFlags(MessageFlags.IsComponentsV2);
-
-        return response;
+        return InteractionMessages.FromContainer(container);
     }
 
     protected InteractionMessageProperties ContainerResponse(
@@ -103,40 +87,13 @@ public abstract class GIRBaseCommandModule : ApplicationCommandModule<GIRContext
         bool ephemralIfNoob = true,
         AllowedMentionsProperties? allowedMentions = null)
     {
-        var response = new InteractionMessageProperties()
-            .WithComponents([container])
-            .WithFlags(MessageFlags.IsComponentsV2 |
-                       (ephemralIfNoob && Context.ShouldWhisperIfNoPermissions() ? MessageFlags.Ephemeral : 0))
-            .WithAllowedMentions(allowedMentions ?? AllowedMentionsProperties.None);
+        var visibility = ephemralIfNoob ? ReplyVisibility.Auto : ReplyVisibility.Public;
+        var flags = MessageFlags.IsComponentsV2;
 
-        return response;
-    }
+        if (visibility == ReplyVisibility.Ephemeral ||
+            visibility == ReplyVisibility.Auto && Context.ShouldWhisperIfNoPermissions())
+            flags |= MessageFlags.Ephemeral;
 
-    protected async Task<InteractionCallbackResponse?> SendResponse(InteractionMessageProperties properties)
-    {
-        var callback = InteractionCallback.Message(properties);
-        return await RespondAsync(callback);
-    }
-
-    protected new async Task<InteractionCallbackResponse?> RespondAsync(
-        InteractionCallbackProperties callback,
-        bool withResponse = false,
-        RestRequestProperties? properties = null,
-        CancellationToken cancellationToken = default)
-    {
-        var response = await base.RespondAsync(callback, withResponse, properties, cancellationToken);
-        Context.MarkInteractionResponded();
-        return response;
-    }
-    
-    protected async Task<RestMessage> SendEditResponse(InteractionMessageProperties properties)
-    {
-        return await ModifyResponseAsync(m =>
-        {
-            m.Content = properties.Content;
-            m.Components = properties.Components;
-            m.Flags = properties.Flags;
-            m.AllowedMentions = properties.AllowedMentions;
-        });
+        return InteractionMessages.FromContainer(container, flags, allowedMentions);
     }
 }
